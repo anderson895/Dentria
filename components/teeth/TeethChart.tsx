@@ -188,7 +188,13 @@ export default function TeethChart({ patientId, initialTeeth, onSave }: TeethCha
           }}
         >
           {/* Tooth number */}
-          <Typography variant="caption" sx={{ fontSize: '9px', color: 'text.secondary', lineHeight: 1, my: 0.3, fontWeight: hasData ? 700 : 400, color: hasData ? cond.color : 'text.secondary' }}>
+          <Typography variant="caption" sx={{ 
+            fontSize: '9px', 
+            lineHeight: 1, 
+            my: 0.3, 
+            fontWeight: hasData ? 700 : 400, 
+            color: hasData ? cond.color : 'text.secondary' 
+          }}>
             {num}
           </Typography>
 
