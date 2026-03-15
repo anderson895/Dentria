@@ -9,7 +9,7 @@ import {
 import { ArrowBack, Edit, CalendarMonth, MedicalServices, Phone, Email, Cake } from '@mui/icons-material'
 import dayjs from 'dayjs'
 import PatientForm from './PatientForm'
-import TeethChart from '../teeth/TeethChart'
+import TeethChart3D from '../teeth/TeethChart3D'
 
 interface PatientDetailProps { patientId: string }
 
@@ -109,7 +109,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
 
             <CardContent sx={{ p: 3 }}>
               {tab === 0 && (
-                <TeethChart
+                <TeethChart3D
                   patientId={patientId}
                   initialTeeth={patient.teethRecord || []}
                   onSave={async (teeth) => {

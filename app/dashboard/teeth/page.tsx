@@ -6,7 +6,7 @@ import {
   MenuItem, Select, FormControl, InputLabel, CircularProgress, Autocomplete,
 } from '@mui/material'
 import { Search, MedicalServices } from '@mui/icons-material'
-import TeethChart from '@/components/teeth/TeethChart'
+import TeethChart3D from '@/components/teeth/TeethChart3D'
 
 export default function TeethPage() {
   const [patients, setPatients] = useState<any[]>([])
@@ -92,7 +92,7 @@ export default function TeethPage() {
               {patient.firstName} {patient.lastName}
             </Typography>
             <Typography variant="body2" color="text.secondary" mb={3}>{patient.email}</Typography>
-            <TeethChart
+            <TeethChart3D
               patientId={patient._id}
               initialTeeth={patient.teethRecord || []}
               onSave={handleSave}

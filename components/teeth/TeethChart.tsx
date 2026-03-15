@@ -133,7 +133,7 @@ export default function TeethChart({ patientId, initialTeeth, onSave }: TeethCha
     try {
       const fd = new FormData()
       fd.append('file', file)
-      fd.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!)
+      fd.append('upload_preset', 'Dentra')
       const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd })
       const data = await res.json()
       setEditForm(p => ({ ...p, imageUrl: data.secure_url }))
@@ -188,13 +188,7 @@ export default function TeethChart({ patientId, initialTeeth, onSave }: TeethCha
           }}
         >
           {/* Tooth number */}
-          <Typography variant="caption" sx={{ 
-            fontSize: '9px', 
-            lineHeight: 1, 
-            my: 0.3, 
-            fontWeight: hasData ? 700 : 400, 
-            color: hasData ? cond.color : 'text.secondary' 
-          }}>
+          <Typography variant="caption" sx={{ fontSize: '9px', color: 'text.secondary', lineHeight: 1, my: 0.3, fontWeight: hasData ? 700 : 400, color: hasData ? cond.color : 'text.secondary' }}>
             {num}
           </Typography>
 
