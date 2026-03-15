@@ -1,0 +1,45 @@
+{
+  "name": "dentra",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
+    "@mui/x-date-pickers": "^7.5.0",
+    "@react-three/drei": "^9.105.6",
+    "@react-three/fiber": "^8.16.8",
+    "autoprefixer": "^10.4.27",
+    "bcryptjs": "^2.4.3",
+    "dayjs": "^1.11.20",
+    "framer-motion": "^11.2.10",
+    "mongoose": "^8.23.0",
+    "next": "14.2.3",
+    "next-auth": "^4.24.13",
+    "next-cloudinary": "^6.17.5",
+    "postcss": "^8.5.8",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hot-toast": "^2.6.0",
+    "tailwindcss": "^4.2.1",
+    "three": "^0.164.1",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/three": "^0.164.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "typescript": "^5"
+  }
+}
