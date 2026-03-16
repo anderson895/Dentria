@@ -126,7 +126,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
     lowerRotZ:  0.0,
     flipUpper:  false,
     flipLower:  true,
-    showGums:   true,  // toggle gum visibility
+    showGums:   false, // toggle gum visibility (default OFF)
   })
   const zoomRef = useRef(18)  // separate ref so zoom buttons work without re-render
   const [ctrl, setCtrl] = useState({ ...ctrlRef.current })
