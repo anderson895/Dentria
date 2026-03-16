@@ -10,6 +10,25 @@ import dayjs from 'dayjs'
 import PatientForm from './PatientForm'
 import TeethChart3D from '../teeth/TeethChart3D'
 
+// ── Shared design tokens (keep in sync with TeethChart3D) ───────────────────
+const P = {
+  primary:     '#0A6EBD',
+  primaryDark: '#085A9E',
+  secondary:   '#00B4D8',
+  gradientBtn: 'linear-gradient(135deg, #0A6EBD, #00B4D8)',
+  medAccent:   '#C62828',
+  medBg:       '#FFF5F5',
+  medBorder:   '#FFCDD2',
+  allerAccent: '#B45309',
+  allerBg:     '#FFFBEB',
+  allerBorder: '#FDE68A',
+  grey400:     '#9ca3af',
+  grey600:     '#4b5563',
+  grey900:     '#111827',
+}
+
+
+
 interface PatientDetailProps { patientId: string }
 
 // ── Same preset lists as PatientForm ─────────────────────────────────────────
@@ -99,10 +118,10 @@ function MedicalChecklist({
             }
           </Box>
           <Box>
-            <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#111827', fontSize: '0.8rem', lineHeight: 1.2 }}>
+            <Typography variant="subtitle2" fontWeight={700} sx={{ color: P.grey900, fontSize: '0.8rem', lineHeight: 1.2 }}>
               {title}
             </Typography>
-            <Typography variant="caption" sx={{ color: '#9ca3af', fontSize: '0.7rem' }}>{subtitle}</Typography>
+            <Typography variant="caption" sx={{ color: P.grey400, fontSize: '0.7rem' }}>{subtitle}</Typography>
           </Box>
         </Box>
 
@@ -118,7 +137,7 @@ function MedicalChecklist({
               {checkedCount} noted
             </Box>
           ) : (
-            <Typography sx={{ fontSize: '10px', color: '#9ca3af', fontStyle: 'italic' }}>
+            <Typography sx={{ fontSize: '10px', color: P.grey400, fontStyle: 'italic' }}>
               None recorded
             </Typography>
           )}
@@ -126,7 +145,7 @@ function MedicalChecklist({
           <Box
             component="svg" viewBox="0 0 12 12"
             sx={{
-              width: 12, height: 12, color: '#9ca3af', flexShrink: 0,
+              width: 12, height: 12, color: P.grey400, flexShrink: 0,
               transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
               transition: 'transform 0.2s',
             }}
@@ -193,7 +212,7 @@ function MedicalChecklist({
           {customItems.length > 0 && (
             <>
               <Divider sx={{ my: 1.25 }}>
-                <Typography sx={{ fontSize: '10px', color: '#9ca3af', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                <Typography sx={{ fontSize: '10px', color: P.grey400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8 }}>
                   Other / Specified
                 </Typography>
               </Divider>
@@ -310,7 +329,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
             component="a"
             href="/dashboard/appointments/new"
             size={isMobile ? 'small' : 'medium'}
-            sx={{ background: 'linear-gradient(135deg, #0A6EBD, #00B4D8)', whiteSpace: 'nowrap' }}
+            sx={{ background: P.gradientBtn, whiteSpace: 'nowrap' }}
           >
             {isMobile ? 'Book' : 'Book Appointment'}
           </Button>
@@ -387,10 +406,10 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
                 <MedicalChecklist
                   title="Medical History"
                   subtitle="Pre-existing conditions"
-                  accentColor="#C62828"
-                  bgColor="#FFF5F5"
-                  checkedBg="#FFF5F5"
-                  borderColor="#FFCDD2"
+                  accentColor={P.medAccent}
+                  bgColor={P.medBg}
+                  checkedBg={P.medBg}
+                  borderColor={P.medBorder}
                   presets={MEDICAL_HISTORY_OPTIONS}
                   savedValue={patient.medicalHistory || ''}
                 />
@@ -398,10 +417,10 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
                 <MedicalChecklist
                   title="Allergies"
                   subtitle="Drug and substance allergies"
-                  accentColor="#B45309"
-                  bgColor="#FFFBEB"
-                  checkedBg="#FFFBEB"
-                  borderColor="#FDE68A"
+                  accentColor={P.allerAccent}
+                  bgColor={P.allerBg}
+                  checkedBg={P.allerBg}
+                  borderColor={P.allerBorder}
                   presets={ALLERGY_OPTIONS}
                   savedValue={patient.allergies || ''}
                 />

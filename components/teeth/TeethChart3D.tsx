@@ -14,6 +14,44 @@ import {
 } from '@mui/icons-material'
 import toast from 'react-hot-toast'
 
+// ── Shared design tokens ─────────────────────────────────────────────────────
+const P = {
+  primary:     '#0A6EBD',
+  primaryDark: '#085A9E',
+  secondary:   '#00B4D8',
+  gradientBtn: 'linear-gradient(135deg, #0A6EBD, #00B4D8)',
+
+  // 3D panel (keeps dark theme but uses brand colours)
+  panelBg:     '#0d1b2e',
+  panelBorder: 'rgba(10,110,189,0.25)',
+  panelText:   '#e2eaf5',
+  panelMuted:  '#5a7a9a',
+  panelAccent: '#00B4D8',   // was #00d4ff
+  panelGum:    '#c85070',
+  panelUpper:  '#0A6EBD',   // was #3b8eff
+  panelLower:  '#00B4D8',   // was #00e5c0
+  panelFlip:   '#F59E0B',   // was #ffb340
+
+  // Medical checklist (PatientDetail)
+  medAccent:    '#C62828',
+  medBg:        '#FFF5F5',
+  medBorder:    '#FFCDD2',
+  allerAccent:  '#B45309',
+  allerBg:      '#FFFBEB',
+  allerBorder:  '#FDE68A',
+
+  // Neutral
+  white: '#ffffff',
+  grey50: '#f9fafb',
+  grey100: '#f3f4f6',
+  grey300: '#d1d5db',
+  grey400: '#9ca3af',
+  grey600: '#4b5563',
+  grey900: '#111827',
+}
+
+
+
 interface ToothRecord {
   toothNumber: number
   label: string
@@ -672,7 +710,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
               <line x1="14" y1="13" x2="14" y2="26" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
               <line x1="9"  y1="18" x2="19" y2="18" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
             </>)}
-            {tooth?.label && !isMissing && <circle cx="22" cy="9" r="4" fill="#0A6EBD" />}
+            {tooth?.label && !isMissing && <circle cx="22" cy="9" r="4" fill={P.primary} />}
           </svg>
         </Box>
         {hasData && !isMissing && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: cond.accent, my: 0.2 }} />}
@@ -694,14 +732,31 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
-          <Button variant="outlined" startIcon={<RestartAlt />} onClick={handleReset} color="error" size="small">Reset</Button>
+          <Button
+            variant="outlined"
+            startIcon={<RestartAlt />}
+            onClick={handleReset}
+            size="small"
+            sx={{
+              borderColor: P.primary,
+              color: P.primary,
+              '&:hover': { bgcolor: `${P.primary}0D`, borderColor: P.primaryDark },
+            }}
+          >
+            Reset
+          </Button>
           <Button
             variant="contained"
             startIcon={<Save />}
             onClick={handleSaveAll}
             disabled={saving}
             size="small"
-            sx={{ background: 'linear-gradient(135deg, #0A6EBD, #00B4D8)', whiteSpace: 'nowrap' }}
+            sx={{
+              background: P.gradientBtn,
+              whiteSpace: 'nowrap',
+              boxShadow: 'none',
+              '&:hover': { background: P.gradientBtn, filter: 'brightness(0.92)', boxShadow: 'none' },
+            }}
           >
             {saving ? 'Saving…' : 'Save Chart'}
           </Button>
@@ -752,8 +807,8 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
               p: { xs: 1.5, sm: 3 },
               position: 'relative',
               overflow: 'hidden',
-              '&::before': { content: '"UPPER (Maxillary)"', position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 700, color: '#0A6EBD', opacity: 0.6, letterSpacing: 1.5, whiteSpace: 'nowrap' },
-              '&::after':  { content: '"LOWER (Mandibular)"', position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 700, color: '#0A6EBD', opacity: 0.6, letterSpacing: 1.5, whiteSpace: 'nowrap' },
+              '&::before': { content: '"UPPER (Maxillary)"', position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 700, color: P.primary, opacity: 0.6, letterSpacing: 1.5, whiteSpace: 'nowrap' },
+              '&::after':  { content: '"LOWER (Mandibular)"', position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 700, color: P.primary, opacity: 0.6, letterSpacing: 1.5, whiteSpace: 'nowrap' },
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -817,7 +872,15 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
           )}
 
           {/* ── 3D Adjustment Panel (collapsible) ── */}
-          <Box sx={{ mb: 1.5, bgcolor: '#0d1b2e', border: '1px solid rgba(100,160,255,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+          <Box sx={{
+            mb: 1.5,
+            bgcolor: 'white',
+            border: '1px solid',
+            borderColor: `${P.primary}30`,
+            borderRadius: 2,
+            overflow: 'hidden',
+            boxShadow: `0 1px 4px ${P.primary}12`,
+          }}>
 
             {/* Panel Header — always visible, acts as toggle */}
             <Box
@@ -830,34 +893,41 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
                 justifyContent: 'space-between',
                 px: 2,
                 py: 1.25,
-                bgcolor: 'transparent',
+                bgcolor: panelOpen ? `${P.primary}08` : `${P.primary}04`,
                 border: 'none',
                 cursor: 'pointer',
-                borderBottom: panelOpen ? '1px solid rgba(100,160,255,0.12)' : 'none',
+                borderBottom: panelOpen ? '1px solid' : 'none',
+                borderColor: `${P.primary}20`,
                 transition: 'background 0.15s',
-                '&:hover': { bgcolor: 'rgba(100,160,255,0.05)' },
+                '&:hover': { bgcolor: `${P.primary}10` },
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Tune sx={{ color: '#00d4ff', fontSize: 16 }} />
-                <Typography sx={{ color: '#00d4ff', fontSize: '11px', fontFamily: 'monospace', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                <Box sx={{
+                  width: 26, height: 26, borderRadius: 1,
+                  bgcolor: `${P.primary}15`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Tune sx={{ color: P.primary, fontSize: 15 }} />
+                </Box>
+                <Typography sx={{ color: P.primary, fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em' }}>
                   3D Adjustment Panel
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography sx={{ color: '#4a6080', fontSize: '10px', fontFamily: 'monospace' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <Typography sx={{ color: 'text.secondary', fontSize: '11px' }}>
                   {panelOpen ? 'Hide' : 'Show'}
                 </Typography>
                 {panelOpen
-                  ? <ExpandLess sx={{ color: '#4a6080', fontSize: 18 }} />
-                  : <ExpandMore sx={{ color: '#4a6080', fontSize: 18 }} />
+                  ? <ExpandLess sx={{ color: 'text.secondary', fontSize: 18 }} />
+                  : <ExpandMore sx={{ color: 'text.secondary', fontSize: 18 }} />
                 }
               </Box>
             </Box>
 
             {/* Panel Body */}
             <Collapse in={panelOpen}>
-              <Box sx={{ p: 2, userSelect: 'none' }}>
+              <Box sx={{ p: 2, userSelect: 'none', bgcolor: '#FAFCFF' }}>
 
                 {/* Controls row: zoom + gum toggle */}
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 1.5, gap: 0.8, flexWrap: 'wrap' }}>
@@ -869,30 +939,30 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
                       sx={{
                         width: 28, height: 28,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        bgcolor: 'transparent', border: '1px solid rgba(100,160,255,0.25)', borderRadius: 1,
-                        color: '#00d4ff', fontSize: '16px', fontFamily: 'monospace', cursor: 'pointer', lineHeight: 1,
-                        '&:hover': { bgcolor: 'rgba(0,212,255,0.1)', borderColor: '#00d4ff' },
+                        bgcolor: 'white', border: '1px solid', borderColor: `${P.primary}40`, borderRadius: 1,
+                        color: P.primary, fontSize: '16px', fontWeight: 700, cursor: 'pointer', lineHeight: 1,
+                        '&:hover': { bgcolor: `${P.primary}0D`, borderColor: P.primary },
                       }}
                     >
                       {label}
                     </Box>
                   ))}
-                  <Typography sx={{ color: '#4a6080', fontSize: '10px', fontFamily: 'monospace', mr: 0.5 }}>zoom</Typography>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '11px', mr: 0.5 }}>zoom</Typography>
 
                   {/* Gum toggle */}
                   <Box
                     component="button"
                     onClick={() => { ctrlRef.current = { ...ctrlRef.current, showGums: !ctrlRef.current.showGums }; setCtrl({ ...ctrlRef.current }) }}
                     sx={{
-                      display: 'flex', alignItems: 'center', gap: 0.6, px: 1, py: 0.4,
-                      bgcolor: ctrl.showGums ? 'rgba(200,80,112,0.15)' : 'transparent',
-                      border: '1px solid', borderColor: ctrl.showGums ? 'rgba(200,80,112,0.5)' : 'rgba(100,160,255,0.2)',
-                      borderRadius: 1, cursor: 'pointer', transition: 'all 0.15s',
-                      '&:hover': { bgcolor: 'rgba(200,80,112,0.1)' },
+                      display: 'flex', alignItems: 'center', gap: 0.6, px: 1.25, py: 0.5,
+                      bgcolor: ctrl.showGums ? '#FFF0F3' : 'white',
+                      border: '1px solid', borderColor: ctrl.showGums ? P.panelGum : `${P.primary}30`,
+                      borderRadius: 1.5, cursor: 'pointer', transition: 'all 0.15s',
+                      '&:hover': { bgcolor: '#FFF0F3', borderColor: P.panelGum },
                     }}
                   >
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: ctrl.showGums ? '#c85070' : '#4a6080', flexShrink: 0 }} />
-                    <Typography sx={{ color: ctrl.showGums ? '#c85070' : '#4a6080', fontSize: '10px', fontFamily: 'monospace' }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: ctrl.showGums ? P.panelGum : 'text.disabled', flexShrink: 0 }} />
+                    <Typography sx={{ color: ctrl.showGums ? P.panelGum : 'text.secondary', fontSize: '11px', fontWeight: 600 }}>
                       {ctrl.showGums ? 'Gums ON' : 'Gums OFF'}
                     </Typography>
                   </Box>
@@ -903,9 +973,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
 
                   {/* Gum controls */}
                   <Box sx={{ opacity: ctrl.showGums ? 1 : 0.3, pointerEvents: ctrl.showGums ? 'auto' : 'none', transition: 'opacity 0.2s' }}>
-                    <Typography sx={{ color: '#c85070', fontSize: '10px', fontFamily: 'monospace', letterSpacing: '0.08em', mb: 1, textTransform: 'uppercase' }}>
-                      Gum Controls
-                    </Typography>
+                    <Typography sx={{ color: P.panelGum, fontSize: '11px', fontWeight: 700, mb: 1, letterSpacing: '0.03em' }}>Gum Controls</Typography>
                     {([
                       { key: 'jawOffset', label: 'Jaw Gap',       min: 0,   max: 3,   step: 0.05 },
                       { key: 'crownLen',  label: 'Gum Height',    min: 0.2, max: 2.5, step: 0.05 },
@@ -914,14 +982,14 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
                     ] as const).map(({ key, label, min, max, step }) => (
                       <Box key={key} sx={{ mb: 1 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.3 }}>
-                          <Typography sx={{ color: '#8ba0bf', fontSize: '10px', fontFamily: 'monospace' }}>{label}</Typography>
-                          <Typography sx={{ color: '#00d4ff', fontSize: '10px', fontFamily: 'monospace', minWidth: 32, textAlign: 'right' }}>
+                          <Typography sx={{ color: 'text.secondary', fontSize: '11px' }}>{label}</Typography>
+                          <Typography sx={{ color: P.primary, fontSize: '11px', fontWeight: 600, minWidth: 32, textAlign: 'right' }}>
                             {(ctrl[key] as number).toFixed(2)}
                           </Typography>
                         </Box>
                         <input
                           type="range" min={min} max={max} step={step} value={ctrl[key] as number}
-                          style={{ width: '100%', accentColor: '#c85070', cursor: 'pointer', height: 4 }}
+                          style={{ width: '100%', accentColor: P.panelGum, cursor: 'pointer', height: 4 }}
                           onChange={e => {
                             ctrlRef.current = { ...ctrlRef.current, [key]: parseFloat(e.target.value) }
                             setCtrl({ ...ctrlRef.current })
@@ -934,19 +1002,17 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
 
                   {/* Jaw rotation + crown flip */}
                   <Box>
-                    <Typography sx={{ color: '#3b8eff', fontSize: '10px', fontFamily: 'monospace', letterSpacing: '0.08em', mb: 1, textTransform: 'uppercase' }}>
-                      Jaw Rotation
-                    </Typography>
+                    <Typography sx={{ color: P.panelUpper, fontSize: '11px', fontWeight: 700, mb: 1, letterSpacing: '0.03em' }}>Jaw Rotation</Typography>
                     {([
-                      { key: 'upperRotX', label: 'Upper Pitch', color: '#3b8eff' },
-                      { key: 'upperRotZ', label: 'Upper Roll',  color: '#3b8eff' },
-                      { key: 'lowerRotX', label: 'Lower Pitch', color: '#00e5c0' },
-                      { key: 'lowerRotZ', label: 'Lower Roll',  color: '#00e5c0' },
+                      { key: 'upperRotX', label: 'Upper Pitch', color: P.panelUpper },
+                      { key: 'upperRotZ', label: 'Upper Roll',  color: P.panelUpper },
+                      { key: 'lowerRotX', label: 'Lower Pitch', color: P.panelLower },
+                      { key: 'lowerRotZ', label: 'Lower Roll',  color: P.panelLower },
                     ] as const).map(({ key, label, color }) => (
                       <Box key={key} sx={{ mb: 1 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.3 }}>
-                          <Typography sx={{ color: '#8ba0bf', fontSize: '10px', fontFamily: 'monospace' }}>{label}</Typography>
-                          <Typography sx={{ color, fontSize: '10px', fontFamily: 'monospace', minWidth: 42, textAlign: 'right' }}>
+                          <Typography sx={{ color: 'text.secondary', fontSize: '11px' }}>{label}</Typography>
+                          <Typography sx={{ color, fontSize: '11px', fontWeight: 600, minWidth: 42, textAlign: 'right' }}>
                             {((ctrl[key] as number) * 180 / Math.PI).toFixed(1)}°
                           </Typography>
                         </Box>
@@ -961,14 +1027,12 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
                     <Box
                       component="button"
                       onClick={() => { ctrlRef.current = { ...ctrlRef.current, upperRotX: 0, upperRotZ: 0, lowerRotX: 0, lowerRotZ: 0 }; setCtrl({ ...ctrlRef.current }) }}
-                      sx={{ mt: 0.5, width: '100%', py: 0.5, bgcolor: 'transparent', border: '1px solid rgba(100,160,255,0.2)', borderRadius: 1, color: '#8ba0bf', fontSize: '10px', fontFamily: 'monospace', cursor: 'pointer', '&:hover': { bgcolor: 'rgba(100,160,255,0.08)', color: '#fff' } }}
+                      sx={{ mt: 0.5, width: '100%', py: 0.6, bgcolor: 'white', border: '1px solid', borderColor: `${P.primary}30`, borderRadius: 1.5, color: P.primary, fontSize: '11px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', '&:hover': { bgcolor: `${P.primary}0D`, borderColor: P.primary } }}
                     >
                       Reset Rotations
                     </Box>
 
-                    <Typography sx={{ color: '#ffb340', fontSize: '10px', fontFamily: 'monospace', letterSpacing: '0.08em', mt: 1.5, mb: 0.8, textTransform: 'uppercase' }}>
-                      Crown Direction
-                    </Typography>
+                    <Typography sx={{ color: P.panelFlip, fontSize: '11px', fontWeight: 700, mt: 1.5, mb: 0.8 }}>Crown Direction</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
                       {([
                         { key: 'flipUpper', jaw: 'Upper (1–16)' },
@@ -983,19 +1047,19 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
                             sx={{
                               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                               px: 1.2, py: 0.6,
-                              bgcolor: isFlipped ? 'rgba(255,179,64,0.15)' : 'transparent',
-                              border: '1px solid', borderColor: isFlipped ? 'rgba(255,179,64,0.5)' : 'rgba(100,160,255,0.2)',
+                              bgcolor: isFlipped ? 'rgba(245,158,11,0.15)' : 'transparent',
+                              border: '1px solid', borderColor: isFlipped ? 'rgba(245,158,11,0.5)' : 'rgba(10,110,189,0.2)',
                               borderRadius: 1, cursor: 'pointer', transition: 'all 0.15s',
-                              '&:hover': { bgcolor: 'rgba(255,179,64,0.1)' },
+                              '&:hover': { bgcolor: 'rgba(245,158,11,0.1)' },
                             }}
                           >
-                            <Typography sx={{ color: isFlipped ? '#ffb340' : '#8ba0bf', fontSize: '10px', fontFamily: 'monospace' }}>{jaw}</Typography>
+                            <Typography sx={{ color: isFlipped ? P.panelFlip : 'text.secondary', fontSize: '11px', fontWeight: 600 }}>{jaw}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <Typography sx={{ color: isFlipped ? '#ffb340' : '#4a6080', fontSize: '9px', fontFamily: 'monospace' }}>
+                              <Typography sx={{ color: isFlipped ? P.panelFlip : 'text.secondary', fontSize: '10px', fontWeight: 500 }}>
                                 {isFlipped ? 'FLIPPED ↕' : 'NORMAL ↑↓'}
                               </Typography>
-                              <Box sx={{ width: 28, height: 14, borderRadius: 7, bgcolor: isFlipped ? '#ffb340' : 'rgba(100,160,255,0.15)', border: '1px solid', borderColor: isFlipped ? '#ffb340' : 'rgba(100,160,255,0.3)', position: 'relative', transition: 'all 0.2s', flexShrink: 0 }}>
-                                <Box sx={{ position: 'absolute', top: 2, left: isFlipped ? 14 : 2, width: 8, height: 8, borderRadius: '50%', bgcolor: isFlipped ? '#0d1b2e' : '#4a6080', transition: 'left 0.2s' }} />
+                              <Box sx={{ width: 28, height: 14, borderRadius: 7, bgcolor: isFlipped ? P.panelFlip : 'rgba(10,110,189,0.15)', border: '1px solid', borderColor: isFlipped ? '#ffb340' : 'rgba(10,110,189,0.3)', position: 'relative', transition: 'all 0.2s', flexShrink: 0 }}>
+                                <Box sx={{ position: 'absolute', top: 2, left: isFlipped ? 14 : 2, width: 8, height: 8, borderRadius: '50%', bgcolor: isFlipped ? P.panelBg : '#4a6080', transition: 'left 0.2s' }} />
                               </Box>
                             </Box>
                           </Box>
@@ -1038,7 +1102,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
             {/* Loading overlay */}
             {!isSceneReady && (
               <Box sx={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(13,27,46,0.88)', zIndex: 5 }}>
-                <CircularProgress sx={{ color: '#00B4D8', mb: 2 }} size={40} />
+                <CircularProgress sx={{ color: P.secondary, mb: 2 }} size={40} />
                 <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>Loading {loadedCount}/32 tooth models…</Typography>
               </Box>
             )}
@@ -1165,7 +1229,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={() => setEditDialog(false)} variant="outlined">Cancel</Button>
-          <Button onClick={handleSaveEdit} variant="contained" sx={{ background: 'linear-gradient(135deg, #0A6EBD, #00B4D8)' }}>
+          <Button onClick={handleSaveEdit} variant="contained" sx={{ background: P.gradientBtn }}>
             Save & Apply to 3D
           </Button>
         </DialogActions>
