@@ -269,6 +269,44 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
       const glbCache: Record<string, THREE.Group> = {}
       let totalLoaded = 0
       const TOTAL = 32
+      let currentHoveredNum: number | null = null
+
+      function getEffectiveRGB(num: number): [number, number, number] {
+        const data = toothMap[num]
+        if (!data) return [0.96, 0.94, 0.90]
+        const existing = teeth.get(num)
+        const condition = existing?.condition || 'healthy'
+        if (condition === 'healthy') {
+          const c = data.originalColors[0] || [0.96, 0.94, 0.90]
+          return [c[0], c[1], c[2]]
+        }
+        const cond = getCondStyle(condition)
+        return [...cond.rgb] as [number, number, number]
+      }
+
+      function setHoverHighlight(num: number, on: boolean) {
+        const data = toothMap[num]
+        if (!data) return
+        if (on) {
+          const [r, g, b] = getEffectiveRGB(num)
+          data.materials.forEach(mat => {
+            mat.color.setRGB(
+              Math.min(1, r * 1.3 + 0.15),
+              Math.min(1, g * 1.3 + 0.15),
+              Math.min(1, b * 1.3 + 0.15),
+            )
+            mat.emissive = new THREE.Color(0x99ccff)
+            mat.emissiveIntensity = 0.22
+          })
+        } else {
+          const [r, g, b] = getEffectiveRGB(num)
+          data.materials.forEach(mat => {
+            mat.color.setRGB(r, g, b)
+            mat.emissive = new THREE.Color(0x000000)
+            mat.emissiveIntensity = 0
+          })
+        }
+      }
 
       function applyTint(num: number, condition: string) {
         const data = toothMap[num]
@@ -283,6 +321,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
         } else {
           data.materials.forEach(mat => mat.color.setRGB(cond.rgb[0], cond.rgb[1], cond.rgb[2]))
         }
+        if (num === currentHoveredNum) setHoverHighlight(num, true)
       }
 
       function registerTooth(num: number, group: THREE.Group, materials: THREE.MeshStandardMaterial[], originalColors: number[][]) {
@@ -422,7 +461,14 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
         raycaster.setFromCamera(mouse, camera)
         const hits = raycaster.intersectObjects(clickTargets, true)
         const n = hits.length ? (hits[0].object.userData.toothNum as number) : null
-        if (n !== hoveredNum) { hoveredNum = n; if (!cancelled) setHovered(n); canvas.style.cursor = n ? 'pointer' : 'default' }
+        if (n !== hoveredNum) {
+          if (hoveredNum !== null) setHoverHighlight(hoveredNum, false)
+          hoveredNum = n
+          currentHoveredNum = n
+          if (n !== null) setHoverHighlight(n, true)
+          if (!cancelled) setHovered(n)
+          canvas.style.cursor = n ? 'pointer' : 'default'
+        }
       }
 
       const onClick = (e: MouseEvent) => {
@@ -442,7 +488,16 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
         }
       }
 
+      const onMouseLeave = () => {
+        if (hoveredNum !== null) { setHoverHighlight(hoveredNum, false) }
+        hoveredNum = null
+        currentHoveredNum = null
+        if (!cancelled) setHovered(null)
+        canvas.style.cursor = 'default'
+      }
+
       canvas.addEventListener('mousemove', onMouseMove)
+      canvas.addEventListener('mouseleave', onMouseLeave)
       canvas.addEventListener('click', onClick)
 
       let isDragging = false
@@ -531,6 +586,7 @@ export default function TeethChart3D({ patientId, initialTeeth, onSave }: TeethC
         cancelled = true
         cancelAnimationFrame(animId)
         canvas.removeEventListener('mousemove', onMouseMove)
+        canvas.removeEventListener('mouseleave', onMouseLeave)
         canvas.removeEventListener('click', onClick)
         canvas.removeEventListener('mousedown', onMouseDown)
         canvas.removeEventListener('wheel', onWheel)
