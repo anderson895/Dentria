@@ -327,7 +327,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
             variant="contained"
             startIcon={<CalendarMonth />}
             component="a"
-            href="/dashboard/appointments/new"
+            href={`/dashboard/appointments/new?patientId=${patientId}`}
             size={isMobile ? 'small' : 'medium'}
             sx={{ background: P.gradientBtn, whiteSpace: 'nowrap' }}
           >

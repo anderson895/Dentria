@@ -130,12 +130,7 @@ export default function LoginPage() {
 
           <Divider sx={{ my: 3 }} />
 
-          <Typography variant="body2" textAlign="center" color="text.secondary">
-            Don't have an account?{' '}
-            <Link href="/signup" style={{ color: '#0A6EBD', fontWeight: 600, textDecoration: 'none' }}>
-              Create account
-            </Link>
-          </Typography>
+        
         </CardContent>
       </Card>
     </Box>

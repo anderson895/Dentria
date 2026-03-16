@@ -8,7 +8,8 @@ import {
   Divider, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Tooltip,
   CircularProgress,
 } from '@mui/material'
-import { Add, Edit, Delete, CalendarMonth, Schedule, Person, Close, ChevronLeft, ChevronRight } from '@mui/icons-material'
+import { Add, Edit, Delete, CalendarMonth, Schedule, Person, Close, ChevronLeft, ChevronRight, Lock } from '@mui/icons-material'
+import { useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
 
@@ -35,6 +36,9 @@ export default function AppointmentsClient() {
   const [appointments, setAppointments] = useState<any[]>([])
   const [patients, setPatients] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const lockedPatientId = searchParams.get('patientId')
+  const [lockedPatient, setLockedPatient] = useState<any>(null)
   const [currentDate, setCurrentDate] = useState(dayjs())
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string|null>(null)
@@ -66,6 +70,19 @@ export default function AppointmentsClient() {
   useEffect(() => {
     fetch('/api/patients?limit=200').then(r => r.json()).then(d => setPatients(d.patients || []))
   }, [])
+
+  useEffect(() => {
+    if (!lockedPatientId) return
+    fetch(`/api/patients/${lockedPatientId}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.patient) {
+          setLockedPatient(d.patient)
+          setForm(prev => ({ ...prev, patient: d.patient }))
+          setDialogOpen(true)
+        }
+      })
+  }, [lockedPatientId])
 
   const openNew = () => {
     setEditingId(null)
@@ -261,21 +278,38 @@ export default function AppointmentsClient() {
         <DialogContent sx={{ pt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Autocomplete
-                options={patients}
-                getOptionLabel={p => `${p.firstName} ${p.lastName}`}
-                value={form.patient}
-                onChange={(_, v) => setForm(p => ({ ...p, patient: v }))}
-                renderInput={params => <TextField {...params} label="Patient *" placeholder="Search patient..." />}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    <Box>
-                      <Typography variant="body2" fontWeight={600}>{option.firstName} {option.lastName}</Typography>
-                      <Typography variant="caption" color="text.secondary">{option.email}</Typography>
+              {lockedPatient ? (
+                <TextField
+                  fullWidth
+                  label="Patient"
+                  value={`${lockedPatient.firstName} ${lockedPatient.lastName}`}
+                  disabled
+                  InputProps={{
+                    endAdornment: (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                        <Lock sx={{ fontSize: 16 }} />
+                      </Box>
+                    ),
+                  }}
+                  helperText="Patient is pre-selected from their profile"
+                />
+              ) : (
+                <Autocomplete
+                  options={patients}
+                  getOptionLabel={p => `${p.firstName} ${p.lastName}`}
+                  value={form.patient}
+                  onChange={(_, v) => setForm(p => ({ ...p, patient: v }))}
+                  renderInput={params => <TextField {...params} label="Patient *" placeholder="Search patient..." />}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      <Box>
+                        <Typography variant="body2" fontWeight={600}>{option.firstName} {option.lastName}</Typography>
+                        <Typography variant="caption" color="text.secondary">{option.email}</Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                )}
-              />
+                  )}
+                />
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField fullWidth label="Date *" type="date" value={form.date}

@@ -6,14 +6,14 @@ import Link from 'next/link'
 import {
   Box, Card, CardContent, TextField, Button, Typography,
   InputAdornment, IconButton, Alert, CircularProgress,
-  Divider, MenuItem, Select, FormControl, InputLabel,
+  Divider,
 } from '@mui/material'
-import { Email, Lock, Visibility, VisibilityOff, Person, LocalHospital, Badge } from '@mui/icons-material'
+import { Email, Lock, Visibility, VisibilityOff, Person, LocalHospital } from '@mui/icons-material'
 import toast from 'react-hot-toast'
 
 export default function SignupPage() {
   const router = useRouter()
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'dentist' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -31,7 +31,7 @@ export default function SignupPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, password: form.password, role: form.role }),
+        body: JSON.stringify({ name: form.name, email: form.email, password: form.password, role: 'dentist' }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
@@ -72,7 +72,7 @@ export default function SignupPage() {
           </Box>
 
           <Typography variant="h6" fontWeight={600} mb={0.5}>Create Account</Typography>
-          <Typography variant="body2" color="text.secondary" mb={3}>Join the Dentra platform</Typography>
+          <Typography variant="body2" color="text.secondary" mb={3}>Join the Dentra platform as a dentist</Typography>
 
           {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
 
@@ -89,16 +89,6 @@ export default function SignupPage() {
               InputProps={{ startAdornment: <InputAdornment position="start"><Email color="action" /></InputAdornment> }}
               sx={{ mb: 2 }} required
             />
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Role</InputLabel>
-              <Select value={form.role} label="Role" onChange={e => setForm({ ...form, role: e.target.value })}
-                startAdornment={<InputAdornment position="start"><Badge color="action" /></InputAdornment>}
-                sx={{ borderRadius: 2.5 }}>
-                <MenuItem value="dentist">Dentist</MenuItem>
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="receptionist">Receptionist</MenuItem>
-              </Select>
-            </FormControl>
             <TextField
               fullWidth label="Password" type={showPassword ? 'text' : 'password'}
               value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}

@@ -12,16 +12,17 @@ import {
 import {
   Dashboard, People, CalendarMonth, Logout,
   Menu as MenuIcon, LocalHospital, Notifications,
-  MedicalServices, ChevronLeft,
+  MedicalServices, ChevronLeft, ManageAccounts,
 } from '@mui/icons-material'
 
 const DRAWER_WIDTH = 260
 
 const navItems = [
-  { label: 'Dashboard', icon: <Dashboard />, href: '/dashboard' },
-  { label: 'Patients', icon: <People />, href: '/dashboard/patients' },
-  { label: 'Appointments', icon: <CalendarMonth />, href: '/dashboard/appointments' },
-  { label: 'Teeth Records', icon: <MedicalServices />, href: '/dashboard/teeth' },
+  { label: 'Dashboard',       icon: <Dashboard />,       href: '/dashboard',                    roles: ['admin', 'dentist', 'receptionist'] },
+  { label: 'Patients',        icon: <People />,          href: '/dashboard/patients',           roles: ['admin', 'dentist', 'receptionist'] },
+  { label: 'Appointments',    icon: <CalendarMonth />,   href: '/dashboard/appointments',       roles: ['admin', 'dentist', 'receptionist'] },
+  { label: 'Teeth Records',   icon: <MedicalServices />, href: '/dashboard/teeth',              roles: ['admin', 'dentist'] },
+  { label: 'Manage Employees',icon: <ManageAccounts />,  href: '/dashboard/employees',          roles: ['admin'] },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -31,6 +32,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const userRole = session?.user?.role ?? ''
+
+  const visibleNavItems = navItems.filter(item => item.roles.includes(userRole))
 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #0A6EBD 0%, #064A80 100%)' }}>
@@ -51,7 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Navigation */}
       <List sx={{ px: 1.5, py: 2, flex: 1 }}>
-        {navItems.map(item => {
+        {visibleNavItems.map(item => {
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
           return (
             <ListItem key={item.href} disablePadding sx={{ mb: 0.5 }}>
@@ -67,7 +72,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }}
               >
                 <ListItemIcon sx={{ minWidth: 38, color: 'inherit' }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} primaryTypographyProps={{ fontWeight: isActive ? 700 : 500, fontSize: '0.9rem' }} />
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{ fontWeight: isActive ? 700 : 500, fontSize: '0.9rem' }}
+                />
               </ListItemButton>
             </ListItem>
           )
@@ -79,15 +87,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* User */}
       <Box sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: 2.5, background: 'rgba(255,255,255,0.1)' }}>
-          <Avatar src={session?.user?.avatar} sx={{ width: 36, height: 36, bgcolor: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>
+          <Avatar
+            src={session?.user?.avatar}
+            sx={{ width: 36, height: 36, bgcolor: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}
+          >
             {session?.user?.name?.[0]}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="body2" fontWeight={600} color="white" noWrap>{session?.user?.name}</Typography>
-            <Typography variant="caption" color="rgba(255,255,255,0.6)" textTransform="capitalize">{session?.user?.role}</Typography>
+            <Typography variant="body2" fontWeight={600} color="white" noWrap>
+              {session?.user?.name}
+            </Typography>
+            <Typography variant="caption" color="rgba(255,255,255,0.6)" textTransform="capitalize">
+              {session?.user?.role}
+            </Typography>
           </Box>
           <Tooltip title="Sign out">
-            <IconButton size="small" sx={{ color: 'rgba(255,255,255,0.7)', '&:hover': { color: 'white' } }} onClick={() => signOut({ callbackUrl: '/login' })}>
+            <IconButton
+              size="small"
+              sx={{ color: 'rgba(255,255,255,0.7)', '&:hover': { color: 'white' } }}
+              onClick={() => signOut({ callbackUrl: '/login' })}
+            >
               <Logout fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -100,15 +119,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Desktop Drawer */}
       {!isMobile && (
-        <Drawer variant="permanent" sx={{ width: DRAWER_WIDTH, flexShrink: 0, '& .MuiDrawer-paper': { width: DRAWER_WIDTH, border: 'none', boxShadow: '4px 0 24px rgba(10,110,189,0.12)' } }}>
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: DRAWER_WIDTH, flexShrink: 0,
+            '& .MuiDrawer-paper': { width: DRAWER_WIDTH, border: 'none', boxShadow: '4px 0 24px rgba(10,110,189,0.12)' },
+          }}
+        >
           {drawerContent}
         </Drawer>
       )}
 
       {/* Mobile Drawer */}
       {isMobile && (
-        <Drawer variant="temporary" open={mobileOpen} onClose={() => setMobileOpen(false)}
-          sx={{ '& .MuiDrawer-paper': { width: DRAWER_WIDTH, border: 'none' } }}>
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          sx={{ '& .MuiDrawer-paper': { width: DRAWER_WIDTH, border: 'none' } }}
+        >
           {drawerContent}
         </Drawer>
       )}
